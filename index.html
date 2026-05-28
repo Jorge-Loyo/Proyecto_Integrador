@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INFODETS — Proyecto Integrador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --blue: #0072BB; --blue-l: #00A1E6; --red: #E30613;
+      --bg: #0B1120; --card: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.06);
+      --text: #E8EAF0; --text2: #7A7FA0;
+      --slide-w: 100vw; --slide-h: 100vh;
+    }
+html, body { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
+body {
+  font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+}
+
+    /* ─── CONTAINER ─── */
+    #slides {
+      display: flex; flex-direction: column;
+      width: 100vw; height: 100vh;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+      will-change: transform;
+    }
+    .slide {
+      width: 100vw; height: 100vh; flex: 0 0 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 60px 80px; position: relative; overflow: hidden;
+    }
+    .slide > * { position: relative; z-index: 1; }
+
+    /* ─── FONDO CIRCUITO ─── */
+    .slide::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(2px at 10% 15%, rgba(0,161,230,0.12), transparent),
+        radial-gradient(2px at 90% 10%, rgba(0,161,230,0.08), transparent),
+        radial-gradient(3px at 85% 90%, rgba(227,6,19,0.06), transparent),
+        radial-gradient(2px at 15% 85%, rgba(0,114,187,0.1), transparent),
+        radial-gradient(circle at 15% 20%, rgba(0,114,187,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(0,161,230,0.04) 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,114,187,0.015) 2px, rgba(0,114,187,0.015) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,114,187,0.015) 2px, rgba(0,114,187,0.015) 4px);
+      pointer-events: none;
+    }
+    .slide[data-expo]::after {
+      content: attr(data-expo);
+      position: absolute; bottom: 14px; right: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem; font-weight: 700;
+      color: rgba(255,255,255,0.07);
+      z-index: 2; pointer-events: none;
+    }
+
+    /* ─── BARRA GCBA ─── */
+    .gbar {
+      position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-l), var(--red));
+      z-index: 2;
+    }
+
+    /* ─── TIPOGRAFÍA ─── */
+    h1 {
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      font-weight: 900; letter-spacing: -2px;
+      background: linear-gradient(135deg, var(--blue-l), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.8rem);
+      font-weight: 700; color: var(--blue-l); margin-top: 0.6rem; margin-bottom: 0.6em;
+    }
+    h3 { font-size: 1.1rem; font-weight: 600; color: #fff; }
+    h4 { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    p { font-size: 0.9rem; line-height: 1.6; color: var(--text2); }
+    .t-small { font-size: 0.75rem; color: var(--text2); }
+
+    /* ─── GRID CARDS ─── */
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; transition: all 0.3s;
+    }
+    .card:hover { border-color: var(--blue); background: rgba(0,114,187,0.05); }
+    .card .ci { font-size: 1.5rem; margin-bottom: 6px; }
+    .card h4 { font-size: 0.85rem; }
+    .card p { font-size: 0.7rem; }
+    .card ul { list-style: none; font-size: 0.7rem; }
+    .card ul li { margin-bottom: 2px; color: var(--text2); }
+    .card ul li strong { color: var(--text); }
+
+    .feat-g { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .feat {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px; border-bottom: 2px solid transparent; transition: border-color 0.3s;
+    }
+    .feat:hover { border-bottom-color: var(--blue-l); }
+    .feat .fi { font-size: 1.2rem; margin-bottom: 3px; }
+    .feat h4 { font-size: 0.75rem; }
+    .feat p { font-size: 0.65rem; }
+
+    /* ─── PROBLEMA ITEMS ─── */
+    .p-item {
+      display:flex; align-items:flex-start; gap:10px;
+      padding:8px 12px; border-radius:6px;
+      background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04);
+      transition:border-color 0.3s;
+    }
+    .p-item:hover { border-color:rgba(0,161,230,0.15); }
+    .p-item .pi-icon {
+      font-size:1.2rem; flex-shrink:0; margin-top:1px;
+      animation:iconBounce 2.5s ease-in-out infinite;
+    }
+    .p-item .pi-icon.p2 { animation-delay:0.3s; }
+    .p-item .pi-icon.p3 { animation-delay:0.6s; }
+    .p-item .pi-icon.p4 { animation-delay:0.9s; }
+    .p-item h4 { font-size:0.75rem; color:#fff; margin:0 0 1px 0; }
+    .p-item p { font-size:0.6rem; color:var(--text2); margin:0; }
+
+    .bp-card .bpi { animation:iconPulse 3s ease-in-out infinite; }
+    .bp-card:nth-of-type(2) .bpi { animation-delay:0.4s; }
+    .bp-card:nth-of-type(3) .bpi { animation-delay:0.8s; }
+
+    .vdiv {
+      width:1px; align-self:stretch;
+      background:linear-gradient(180deg,transparent,rgba(0,114,187,0.15),transparent);
+      margin:0 4px;
+    }
+
+    @keyframes iconBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+    @keyframes iconPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
+    @keyframes svgFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+    .svg-pilar { animation:svgFloat 3s ease-in-out infinite; }
+    .svg-p2 { animation-delay:0.4s; }
+    .svg-p3 { animation-delay:0.8s; }
+
+    /* ─── BLUEPRINT CHAT ─── */
+    .bp-grid { display: grid; grid-template-columns: 300px 1fr; gap: 16px; flex:1; align-items:stretch; }
+    .bp-side { display:flex; flex-direction:column; gap:10px; justify-content:center; }
+    .bp-card {
+      background: rgba(0,114,187,0.04); border: 1px solid rgba(0,114,187,0.12);
+      border-radius: 8px; padding: 14px 16px; border-left: 3px solid var(--blue-l);
+    }
+    .bp-card .bpi { font-size:1.1rem; margin-bottom:2px; }
+    .bp-card h4 { font-size:0.75rem; color:var(--blue-l); margin-bottom:2px; }
+    .bp-card p { font-size:0.6rem; color:var(--text2); margin:0; }
+
+    .chat {
+      background: rgba(0,0,0,0.25); border: 1px solid rgba(0,114,187,0.15);
+      border-radius: 10px; display:flex; flex-direction:column; overflow:hidden;
+      height:100%; min-height:0;
+    }
+    .chat-h {
+      padding: 8px 14px; background: rgba(0,114,187,0.08);
+      border-bottom: 1px solid rgba(0,114,187,0.1);
+      display:flex; align-items:center; gap:8px; font-size:0.7rem;
+    }
+    .chat-h .dot { width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; }
+    .chat-h strong { color:#fff; }
+    .chat-h span { color:var(--text2); }
+    .chat-body {
+      flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:8px;
+      overflow-y:auto; scrollbar-width:none; justify-content:flex-end;
+    }
+    .chat-body::-webkit-scrollbar { display:none; }
+    }
+    .chat-msg {
+      max-width:80%; padding:7px 12px; border-radius:8px; font-size:0.6rem; line-height:1.4;
+      animation: fadeUp 0.35s ease both;
+    }
+    .chat-msg.user {
+      align-self:flex-end; background:rgba(0,161,230,0.12); border:1px solid rgba(0,161,230,0.15);
+      color:#fff; border-bottom-right-radius:2px;
+    }
+    .chat-msg.bot {
+      align-self:flex-start; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+      color:var(--text2); border-bottom-left-radius:2px;
+    }
+    .chat-msg.bot strong { color:var(--blue-l); }
+    .chat-in {
+      padding:6px 12px; border-top:1px solid rgba(0,114,187,0.08);
+      font-size:0.6rem; color:var(--text2); opacity:0.5;
+    }
+
+    /* ─── RAG ITEMS ─── */
+    .rag { display: flex; flex-direction: column; gap: 6px; }
+    .ri {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .ri .rn { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1rem; min-width: 28px; }
+    .ri .rd { flex: 1; }
+    .ri .rd h4 { font-size: 0.7rem; margin: 0; }
+    .ri .rd p { font-size: 0.6rem; margin: 0; }
+    .ri .rii { font-size: 1.1rem; }
+    .ri.l0 { border-left: 3px solid var(--blue); } .ri.l0 .rn { color: var(--blue); }
+    .ri.l1 { border-left: 3px solid var(--blue-l); } .ri.l1 .rn { color: var(--blue-l); }
+    .ri.l2 { border-left: 3px solid #FFB347; } .ri.l2 .rn { color: #FFB347; }
+    .ri.l3 { border-left: 3px solid var(--red); } .ri.l3 .rn { color: var(--red); }
+
+    /* ─── STAIRCASE ─── */
+    .staircase { display:flex; flex-direction:column; gap:0; width:100%; max-width:540px; }
+    .stair { display:flex; flex-direction:column; gap:0; align-items:flex-start; }
+    .stair-card { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:var(--card); border:1px solid var(--border); border-left:3px solid var(--blue); width:100%; }
+    .stair-card .pct { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.85rem; min-width:32px; color:var(--blue); }
+    .stair-card .emoji { font-size:1rem; }
+    .stair-card .sc { flex:1; }
+    .stair-card .sc h4 { font-size:0.7rem; margin:0; }
+    .stair-card .sc p { font-size:0.58rem; margin:0; line-height:1.4; color:var(--text2); }
+    .s1 .stair-card { margin-left:40px; border-left-color:var(--blue-l); } .s1 .pct { color:var(--blue-l); }
+    .s2 .stair-card { margin-left:80px; border-left-color:#FFB347; } .s2 .pct { color:#FFB347; }
+    .s3 .stair-card { margin-left:120px; border-left-color:var(--red); }
+    .stair-arrow { align-self:center; font-size:0.65rem; color:var(--blue-l); line-height:1; padding:4px 0; animation:arrowBounce 1.0s ease-in-out infinite; }
+    .s1 .stair-arrow { margin-left:40px; }
+    .s2 .stair-arrow { margin-left:80px; }
+    .s3 .stair-arrow { display:none; }
+    @keyframes arrowBounce { 0%,100% { transform:translateY(0); opacity:0.5; } 50% { transform:translateY(5px); opacity:1; } }
+
+    /* ─── MEC (Motor de Mejora Continua) ─── */
+    .mec-container { position:relative; flex:1; display:flex; align-items:center; justify-content:center; }
+    .mec-center { position:absolute; width:120px; height:120px; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2; }
+    .mec-ring { width:100%; height:100%; animation:mecRotate 10s linear infinite; }
+    .mec-ring svg { width:100%; height:100%; }
+    .mec-dashboard { position:absolute; width:52px; height:52px; left:50%; top:50%; transform:translate(-50%,-50%); animation:mecPulse 2.5s ease-in-out infinite; }
+    @keyframes mecRotate { 100% { transform:rotate(360deg); } }
+    @keyframes mecPulse { 0%,100% { transform:translate(-50%,-50%) scale(1); filter:drop-shadow(0 0 6px rgba(255,179,71,0.3)); } 50% { transform:translate(-50%,-50%) scale(1.1); filter:drop-shadow(0 0 20px rgba(255,179,71,0.7)); } }
+    .mec-lines { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+    .mec-card { position:absolute; width:40%; max-width:380px; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:10px; border-left:3px solid var(--blue-l); transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; opacity:0; z-index:1; }
+    .mec-card:hover { transform:scale(1.05); border-color:var(--blue-l); box-shadow:0 0 24px rgba(0,161,230,0.2); }
+    .mec-card strong { display:block; font-size:0.8rem; color:var(--blue-l); margin-bottom:4px; }
+    .mec-card p { font-size:0.6rem; line-height:1.4; color:var(--text2); margin:0; }
+    .mec-tl { top:2%; left:2%; animation:mecCardIn 0.6s ease forwards; animation-delay:0.3s; }
+    .mec-tr { top:2%; right:2%; animation:mecCardIn 0.6s ease forwards; animation-delay:1.0s; }
+    .mec-br { bottom:2%; right:2%; animation:mecCardIn 0.6s ease forwards; animation-delay:1.7s; }
+    .mec-bl { bottom:2%; left:2%; animation:mecCardIn 0.6s ease forwards; animation-delay:2.4s; }
+    @keyframes mecCardIn { 0% { opacity:0; transform:translateY(12px); } 100% { opacity:1; transform:translateY(0); } }
+    .slide-mec h2 { animation:mecTitleIn 0.6s ease both !important; }
+    @keyframes mecTitleIn { 0% { opacity:0; transform:translateY(-24px); } 100% { opacity:1; transform:translateY(0); } }
+
+    /* ─── PIC (Pipeline Ingesta Controlada) ─── */
+    .slide-pic h2 { animation:picTitleIn 0.6s ease both !important; font-size:clamp(0.9rem,1.6vw,1.2rem); }
+    @keyframes picTitleIn { 0% { opacity:0; transform:translateX(-30px); } 100% { opacity:1; transform:translateX(0); } }
+    .pic-container { display:flex; flex-direction:column; flex:1; }
+    .pic-row { display:flex; align-items:stretch; justify-content:center; gap:0; flex:1; padding:4px 0; }
+    .pic-card { flex:0 0 30%; max-width:420px; padding:36px 22px 26px; background:var(--card); border:1px solid var(--border); border-radius:12px; text-align:center; transition:all 0.3s ease; opacity:0; display:flex; flex-direction:column; position:relative; }
+    .pic-card:hover { transform:scale(1.04); border-color:var(--blue-l); box-shadow:0 0 28px rgba(0,161,230,0.3); }
+    .pic-card .pic-step { position:absolute; top:6px; left:14px; font-size:3rem; font-weight:700; color:rgba(0,161,230,0.07); font-family:'JetBrains Mono',monospace; line-height:1; pointer-events:none; user-select:none; }
+    .pic-card .pic-icon { width:76px; height:76px; margin:0 auto 10px; flex-shrink:0; }
+    .pic-card .pic-icon svg { width:100%; height:100%; }
+    .pic-card h4 { font-size:0.85rem; margin:0 0 10px; color:#fff; }
+    .pic-card p { font-size:0.6rem; line-height:1.5; color:var(--text2); margin:0; flex:1; display:flex; align-items:center; }
+    .pic-arrow { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 4px; min-width:60px; }
+    .pic-arrow .pic-lock { font-size:0.8rem; margin-bottom:4px; animation:picLockPulse 2s ease-in-out infinite; }
+    .pic-arrow .pic-chevron { width:40px; height:40px; }
+    .pic-arrow .pic-chevron path { animation:picFlow 1.2s ease-in-out infinite; }
+    .pic-arrow .pic-particles { display:flex; gap:4px; margin-top:4px; height:6px; align-items:center; }
+    .pic-arrow .pic-particles span { width:4px; height:4px; border-radius:50%; background:var(--blue-l); animation:picPart 1.4s ease-in-out infinite; }
+    .pic-arrow .pic-particles .pp2 { animation-delay:0.35s; }
+    .pic-arrow .pic-particles .pp3 { animation-delay:0.7s; }
+    .pic-c1 { animation:picCardIn 0.5s ease forwards; animation-delay:0.15s; }
+    .pic-c2 { animation:picCardIn 0.5s ease forwards; animation-delay:0.55s; }
+    .pic-c3 { animation:picCardIn 0.5s ease forwards; animation-delay:0.95s; }
+    .pic-a1 { opacity:0; animation:fadeIn 0.3s ease forwards; animation-delay:0.35s; }
+    .pic-a2 { opacity:0; animation:fadeIn 0.3s ease forwards; animation-delay:0.75s; }
+    .pic-sub { opacity:0; animation:fadeIn 0.4s ease forwards; animation-delay:0.05s; }
+    .pic-up-group { animation:picUp 2.2s ease-in-out infinite; }
+    .pic-gear-g { animation:picGear 5s linear infinite; transform-origin:30px 30px; }
+    .pic-db-bot { animation:picDbPulse 1.6s ease-in-out infinite; }
+    @keyframes picFlow { 0%,100% { transform:translateX(0); opacity:0.4; } 50% { transform:translateX(3px); opacity:1; } }
+    @keyframes picLockPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.25); } }
+    @keyframes picPart { 0% { transform:translateX(-6px); opacity:0; } 40% { opacity:1; } 100% { transform:translateX(10px); opacity:0; } }
+    @keyframes picCardIn { 0% { opacity:0; transform:translateY(14px); } 100% { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { 0% { opacity:0; } 100% { opacity:1; } }
+    @keyframes picUp { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+    @keyframes picGear { 100% { transform:rotate(360deg); } }
+    @keyframes picDbPulse { 0%,100% { opacity:0.2; } 50% { opacity:1; filter:drop-shadow(0 0 6px rgba(255,179,71,0.5)); } }
+
+    /* ─── MOTOR (Decisión Flow) ─── */
+    .motor-title { animation:motorReveal 1s ease both !important; }
+    @keyframes motorReveal { 0% { clip-path:inset(0 100% 0 0); } 100% { clip-path:inset(0 0 0 0); } }
+    .motor-diagram { position:relative; flex:1; width:100%; overflow:visible; }
+    .motor-arrows { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+    .motor-ants { stroke-dasharray:8 6; animation:antsMove 0.6s linear infinite; }
+    @keyframes antsMove { 100% { stroke-dashoffset:-14; } }
+    .motor-ants-glow { stroke:#FFB347; stroke-width:4; stroke-dasharray:8 6; opacity:0; transition:opacity 0.3s; }
+    .motor-block { position:absolute; z-index:2; }
+    .motor-3d { padding:16px 18px; border-radius:10px; border:1px solid var(--border); background:var(--card); text-align:center; transform:perspective(800px) rotateX(1.5deg) rotateY(-1.5deg); box-shadow:-3px 3px 0 rgba(0,100,180,0.15),-6px 6px 0 rgba(0,100,180,0.1),-9px 9px 0 rgba(0,100,180,0.05); transition:all 0.3s ease; }
+    .motor-3d .motor-icon { font-size:1.6rem; margin-bottom:4px; }
+    .motor-3d h4 { font-size:0.72rem; margin:0 0 6px; color:#fff; }
+    .motor-3d p { font-size:0.53rem; margin:0; line-height:1.4; color:var(--text2); }
+    /* Gemini */
+    .motor-gemini { left:2%; width:24%; top:50%; transform:translateY(-50%); }
+    .motor-gemini .motor-3d { border-left:3px solid var(--blue); }
+    .motor-gemini .motor-3d:hover { box-shadow:-3px 3px 0 rgba(0,100,180,0.2),-6px 6px 0 rgba(0,100,180,0.15),-9px 9px 0 rgba(0,100,180,0.08),0 0 20px rgba(0,161,230,0.15); }
+    /* Diamond */
+    .motor-diamond-wrap { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2; cursor:pointer; }
+    .motor-diamond { width:140px; height:140px; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); background:rgba(0,161,230,0.08); border:2px solid var(--blue-l); display:flex; align-items:center; justify-content:center; text-align:center; transition:all 0.3s ease; animation:diamondBeat 2.5s ease-in-out infinite; }
+    .motor-diamond-wrap:hover .motor-diamond { border-color:#fff; box-shadow:0 0 30px rgba(0,161,230,0.4); }
+    .motor-diamond p { font-size:0.55rem; line-height:1.35; color:var(--blue-l); margin:0; padding:10px; font-weight:600; }
+    @keyframes diamondBeat { 0%,100% { box-shadow:0 0 8px rgba(0,161,230,0.2); } 50% { box-shadow:0 0 24px rgba(0,161,230,0.5); } }
+    /* Success */
+    .motor-success { right:4%; width:18%; top:14%; }
+    .motor-success > div { padding:14px 16px; border-radius:8px; border:1px solid var(--border); background:var(--card); border-left:3px solid var(--blue); text-align:center; transform:perspective(800px) rotateX(1.5deg) rotateY(-1.5deg); box-shadow:-3px 3px 0 rgba(0,100,180,0.1); }
+    .motor-success p { font-size:0.6rem; color:#fff; margin:0; line-height:1.4; font-weight:600; }
+    .motor-success > div:hover { box-shadow:-3px 3px 0 rgba(0,100,180,0.15),0 0 20px rgba(0,161,230,0.12); }
+    /* Groq */
+    .motor-groq { right:3%; width:23%; bottom:12%; animation:groqPowerOn 0.8s ease both; animation-delay:0.3s; }
+    .motor-groq .motor-3d { border-left:3px solid #4ade80; background:rgba(0,30,15,0.5); border-color:rgba(74,222,128,0.15); box-shadow:-3px 3px 0 rgba(0,180,100,0.12),-6px 6px 0 rgba(0,180,100,0.08),-9px 9px 0 rgba(0,180,100,0.04); }
+    .motor-groq .motor-3d h4 { color:#4ade80; }
+    .motor-groq .motor-3d:hover { box-shadow:-3px 3px 0 rgba(0,180,100,0.18),-6px 6px 0 rgba(0,180,100,0.12),-9px 9px 0 rgba(0,180,100,0.06),0 0 20px rgba(74,222,128,0.15); }
+    @keyframes groqPowerOn { 0% { opacity:0; transform:scale(0.8); filter:brightness(2); } 20% { opacity:1; transform:scale(1.06); } 40% { transform:scale(0.94); } 60% { transform:scale(1.03); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); filter:brightness(1); } }
+    /* Note */
+    .motor-note { position:absolute; left:2%; bottom:2%; z-index:2; width:30%; padding:8px 12px; background:rgba(0,114,187,0.04); border:1px solid rgba(0,114,187,0.08); border-radius:6px; border-left:2px solid var(--blue-l); }
+    .motor-note strong { font-size:0.58rem; color:var(--blue-l); display:block; margin-bottom:2px; }
+    .motor-note span { font-size:0.5rem; color:var(--text2); line-height:1.4; display:block; }
+    /* Diamond hover effects */
+    .diamond-hover .motor-pulse-anim { animation-play-state:paused; }
+    .diamond-hover .motor-ants { stroke:#FFB347 !important; stroke-width:3 !important; animation-duration:0.25s !important; }
+    .diamond-hover .motor-ants-glow { opacity:0.6 !important; }
+    .diamond-hover .motor-default-line { opacity:0.3; }
+    .pipe { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center; }
+    .ps {
+      background: rgba(0,114,187,0.07); border: 1px solid rgba(0,114,187,0.1);
+      border-radius: 6px; padding: 5px 10px; font-size: 0.65rem; text-align: center;
+    }
+    .ps strong { display: block; color: var(--blue-l); font-weight: 600; font-size: 0.75rem; }
+    .pa { color: var(--text2); font-size: 0.8rem; animation: arrowFlow 1.2s ease-in-out infinite; }
+    .pa:nth-of-type(1) { animation-delay: 0s; }
+    .pa:nth-of-type(2) { animation-delay: 0.12s; }
+    .pa:nth-of-type(3) { animation-delay: 0.24s; }
+    .pa:nth-of-type(4) { animation-delay: 0.36s; }
+    .pa:nth-of-type(5) { animation-delay: 0.48s; }
+    .pa:nth-of-type(6) { animation-delay: 0.6s; }
+    .pa:nth-of-type(7) { animation-delay: 0.72s; }
+    @keyframes arrowFlow { 0%,100% { transform:translateX(0); opacity:0.25; } 50% { transform:translateX(4px); opacity:1; } }
+
+    /* ─── STATS ─── */
+    .stat-n {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700;
+      background: linear-gradient(135deg, var(--blue-l), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .quote {
+      font-size: 0.8rem; font-style: italic; color: var(--blue-l);
+      border-left: 3px solid var(--blue); padding-left: 1em; margin-top: 0.8rem;
+    }
+
+    .tech-strip { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 0.8rem; }
+    .tp {
+      font-size: 0.6rem; padding: 3px 12px; border-radius: 14px;
+      background: rgba(0,114,187,0.07); border: 1px solid rgba(0,114,187,0.1);
+      color: var(--text2);
+    }
+    .tp.on { border-color: var(--blue-l); color: var(--blue-l); }
+
+    /* ─── PORTADA ─── */
+    .portada {
+      text-align: center; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+    }
+    .portada .gline {
+      width: 80px; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-l), var(--red));
+      border-radius: 2px; margin: 1rem auto;
+    }
+    .portada .tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 0.5rem; }
+    .portada .tags span {
+      font-size: 0.6rem; padding: 4px 14px; border-radius: 20px;
+      background: rgba(0,114,187,0.08); border: 1px solid rgba(0,114,187,0.12);
+      color: var(--text2);
+    }
+    .portada .sub { font-size: 0.9rem; color: var(--text2); font-weight: 300; }
+
+    /* ─── DIVIDER ─── */
+    .divider { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .divider .dl { width: 60px; height: 3px; border-radius: 2px; margin: 0.6rem auto; }
+    .divider h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: 0.3rem; }
+
+    /* ─── NAVEGACIÓN ─── */
+    #nav { z-index: 100; }
+    #nav button {
+      position: fixed; top: 16px; z-index: 100;
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid rgba(0,114,187,0.2);
+      background: rgba(0,114,187,0.08); backdrop-filter: blur(6px);
+      color: #fff; font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; user-select: none;
+    }
+    #btnPrev { left: 16px; }
+    #btnNext { right: 16px; }
+    #nav button:hover { background: rgba(0,114,187,0.25); border-color: var(--blue-l); transform: scale(1.1); }
+    #nav button:active { transform: scale(0.9); }
+    #nav button:disabled { opacity: 0.1; pointer-events: none; transform: none; }
+
+    /* ─── DOTS ─── */
+    #dots {
+      position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+      z-index: 100; display: flex; flex-direction: column; gap: 8px;
+    }
+    #dots button {
+      width: 8px; height: 8px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent; cursor: pointer;
+      transition: all 0.3s; padding: 0;
+    }
+    #dots button.active {
+      background: var(--blue-l); border-color: var(--blue-l);
+      box-shadow: 0 0 8px rgba(0,161,230,0.4);
+    }
+
+    /* ─── ANIMACIONES ENTRADA ─── */
+    .slide.show .anim-up { animation: fadeUp 0.5s ease both; }
+    .slide.show .anim-scale { animation: fadeScale 0.5s ease both; }
+    .slide.show .anim-line { animation: lineGrow 0.6s ease both; }
+    .slide.show h2 { animation: fadeUp 0.4s ease both; }
+    .slide.show .card:nth-child(1) { animation: fadeUp 0.4s ease both; animation-delay: 0.05s; }
+    .slide.show .card:nth-child(2) { animation: fadeUp 0.4s ease both; animation-delay: 0.1s; }
+    .slide.show .card:nth-child(3) { animation: fadeUp 0.4s ease both; animation-delay: 0.15s; }
+    .slide.show .card:nth-child(4) { animation: fadeUp 0.4s ease both; animation-delay: 0.2s; }
+    .slide.show .card:nth-child(5) { animation: fadeUp 0.4s ease both; animation-delay: 0.25s; }
+    .slide.show .card:nth-child(6) { animation: fadeUp 0.4s ease both; animation-delay: 0.3s; }
+
+    .slide.show .feat:nth-child(1) { animation: slideIn 0.4s ease both; animation-delay: 0.05s; }
+    .slide.show .feat:nth-child(2) { animation: slideIn 0.4s ease both; animation-delay: 0.1s; }
+    .slide.show .feat:nth-child(3) { animation: slideIn 0.4s ease both; animation-delay: 0.15s; }
+    .slide.show .feat:nth-child(4) { animation: slideIn 0.4s ease both; animation-delay: 0.2s; }
+
+    .slide.show .ri:nth-child(1) { animation: slideIn 0.4s ease both; animation-delay: 0.05s; }
+    .slide.show .ri:nth-child(2) { animation: slideIn 0.4s ease both; animation-delay: 0.1s; }
+    .slide.show .ri:nth-child(3) { animation: slideIn 0.4s ease both; animation-delay: 0.15s; }
+    .slide.show .ri:nth-child(4) { animation: slideIn 0.4s ease both; animation-delay: 0.2s; }
+
+    .slide.show .p-item { animation: slideIn 0.4s ease both; }
+    .slide.show .p-item:nth-of-type(1) { animation-delay:0.05s; }
+    .slide.show .p-item:nth-of-type(2) { animation-delay:0.1s; }
+    .slide.show .p-item:nth-of-type(3) { animation-delay:0.15s; }
+    .slide.show .p-item:nth-of-type(4) { animation-delay:0.2s; }
+    .slide.show .bp-card { animation: slideIn 0.4s ease both; }
+    .slide.show .bp-card:nth-of-type(1) { animation-delay: 0.1s; }
+    .slide.show .bp-card:nth-of-type(2) { animation-delay: 0.2s; }
+    .slide.show .bp-card:nth-of-type(3) { animation-delay: 0.3s; }
+
+    .slide.show .ps { animation: fadeScale 0.4s ease both; }
+    .slide.show .ps:nth-child(1) { animation-delay: 0.02s; }
+    .slide.show .ps:nth-child(3) { animation-delay: 0.06s; }
+    .slide.show .ps:nth-child(5) { animation-delay: 0.1s; }
+    .slide.show .ps:nth-child(7) { animation-delay: 0.14s; }
+    .slide.show .ps:nth-child(9) { animation-delay: 0.18s; }
+    .slide.show .ps:nth-child(11) { animation-delay: 0.22s; }
+    .slide.show .ps:nth-child(13) { animation-delay: 0.26s; }
+    .slide.show .ps:nth-child(15) { animation-delay: 0.30s; }
+
+    /* ─── VITAL SIGNS ─── */
+    .vs-hb { width:100%; height:40px; overflow:visible; margin:0.1rem 0 0.15rem; }
+    .vs-hb path { fill:none; stroke:var(--blue-l); stroke-width:2; stroke-dasharray:800; stroke-dashoffset:800; animation:hbDraw 2.5s ease forwards; }
+    @keyframes hbDraw { 100% { stroke-dashoffset:0; } }
+    .vs-hb-line { stroke:rgba(0,161,230,0.08); stroke-width:1; stroke-dasharray:4 6; animation:hbLineMove 8s linear infinite; }
+    @keyframes hbLineMove { 100% { stroke-dashoffset:-200; } }
+    .vs-heart { display:inline-block; animation:heartBeat 1.5s ease-in-out infinite; }
+    @keyframes heartBeat { 0%,100% { transform:scale(1); } 14% { transform:scale(1.2); } 28% { transform:scale(1); } 42% { transform:scale(1.1); } 70% { transform:scale(1); } }
+    .vs-dot { width:10px; height:10px; border-radius:50%; display:inline-block; vertical-align:middle; animation:dotPulse 2s ease-in-out infinite; }
+    @keyframes dotPulse { 0%,100% { opacity:1; box-shadow:0 0 0 0 var(--c,var(--blue)); } 50% { opacity:0.7; box-shadow:0 0 0 8px transparent; } }
+    .vs-bar { height:5px; border-radius:3px; background:rgba(255,255,255,0.06); overflow:hidden; margin-top:4px; }
+    .vs-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--blue),var(--blue-l)); width:0; animation:barFill 1.8s ease-out 0.5s forwards; }
+    @keyframes barFill { 100% { width:var(--pct,80%); } }
+    .vs-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:10px; font-size:0.45rem; font-weight:600; }
+    .vs-fade { opacity:0; animation:fadeUp 0.5s ease forwards; }
+    .slide.show .vs-fade:nth-child(1) { animation-delay:0.1s; }
+    .slide.show .vs-fade:nth-child(2) { animation-delay:0.25s; }
+    .slide.show .vs-fade:nth-child(3) { animation-delay:0.4s; }
+    .slide.show .vs-fade:nth-child(4) { animation-delay:0.55s; }
+    .vs-num { font-family:'JetBrains Mono',monospace; font-size:clamp(1.6rem,3vw,2.8rem); font-weight:700; background:linear-gradient(135deg,var(--blue-l),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+
+    /* ─── CAMBIO DE PARADIGMA ─── */
+    .cp-box { animation:cpBoxShake 4s ease-in-out infinite; }
+    @keyframes cpBoxShake { 0%,100% { transform:translateX(0); } 2% { transform:translateX(-3px); } 4% { transform:translateX(3px); } 6% { transform:translateX(-2px); } 8% { transform:translateX(0); } }
+    .cp-lock { animation:cpLockJolt 3s ease-in-out infinite; transform-origin:40px 48px; }
+    @keyframes cpLockJolt { 0%,100% { rotate:0; } 3% { rotate:-4deg; } 6% { rotate:4deg; } 9% { rotate:0; } }
+    .cp-node-pulse { animation:cpNodePulse 2s ease-in-out infinite; }
+    @keyframes cpNodePulse { 0%,100% { r:4; opacity:0.7; } 50% { r:8; opacity:0; } }
+    .cp-glow { animation:cpGlow 2.5s ease-in-out infinite; }
+    @keyframes cpGlow { 0%,100% { filter:drop-shadow(0 0 4px rgba(0,161,230,0.2)); } 50% { filter:drop-shadow(0 0 14px rgba(0,161,230,0.5)); } }
+    .cp-vs { animation:cpVsPulse 2s ease-in-out infinite; }
+    @keyframes cpVsPulse { 0%,100% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.15); opacity:1; } }
+    .cp-line { height:2px; background:linear-gradient(90deg,transparent,var(--red),transparent); width:0; animation:cpLineGrow 1s ease 0.3s forwards; }
+    @keyframes cpLineGrow { 100% { width:70%; } }
+    .cp-line-r { background:linear-gradient(90deg,transparent,var(--blue-l),transparent); animation-delay:0.5s; }
+    .cp-item { opacity:0; animation:fadeUp 0.4s ease forwards; }
+    .slide.show .cp-item:nth-child(1) { animation-delay:0.15s; }
+    .slide.show .cp-item:nth-child(2) { animation-delay:0.35s; }
+    .slide.show .cp-item:nth-child(3) { animation-delay:0.55s; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeScale { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes lineGrow { from { width: 0; opacity: 0; } to { opacity: 1; } }
+    @keyframes floatText { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    /* ─── ADAPTACIÓN ─── */
+    @media (max-width: 768px) {
+      .slide { padding: 30px 24px; }
+      .g2, .g3, .g4 { grid-template-columns: 1fr; }
+      .feat-g { grid-template-columns: 1fr; }
+      #dots { right: 8px; }
+      #dots button { width: 6px; height: 6px; }
+      #nav button { width: 34px; height: 34px; font-size: 13px; top: 10px; }
+      #btnPrev { left: 10px; }
+      #btnNext { right: 10px; }
+      .pipe { gap: 3px; }
+      .ps { font-size: 0.55rem; padding: 4px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DOTS -->
+  <div id="dots"></div>
+
+  <!-- SLIDES -->
+  <div id="slides">
+
+    <!-- ════════════ 1: PORTADA ════════════ -->
+    <section class="slide portada">
+      <div class="gbar"></div>
+      <img src="img/ifts11logo.jpg" alt="IFTS 11" style="height:60px;margin-bottom:0.6rem;border-radius:4px;opacity:0.9;">
+      <div class="tags">
+        <span>🧠 IA + RAG</span>
+        <span>☁️ Cloud Native</span>
+        <span>📄 Gestión Documental</span>
+        <span>🔐 AWS Cognito</span>
+      </div>
+      <div class="gline"></div>
+      <svg viewBox="0 0 600 90" style="width:100%;max-width:600px;margin:0 auto;overflow:visible;animation:floatText 3s ease-in-out infinite;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="titGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00A1E6"/>
+            <stop offset="100%" stop-color="#0072BB"/>
+          </linearGradient>
+          <filter id="glow"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#00A1E6" flood-opacity="0.35"/></filter>
+        </defs>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="'Inter',sans-serif" font-weight="900"
+              font-size="64" letter-spacing="6"
+              fill="url(#titGrad)" filter="url(#glow)">
+          INFODETS
+        </text>
+      </svg>
+      <p class="sub">Sistema de Gestión de Conocimiento Dinámico</p>
+      <div class="gline"></div>
+      <div style="margin-top:1.5rem; font-size:0.7rem; color:var(--text2);">
+        <strong style="color:var(--text);">Proyecto Integrador - PP1</strong><br>
+        <span>IFTS 11</span>
+      </div>
+      <div style="margin-top:0.8rem; font-size:0.65rem; color:var(--text2); display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <span>Jorge Loyo</span>
+        <span>Fernando Moya</span>
+        <span>Santiago Isbaner</span>
+      </div>
+      <div style="position:absolute;bottom:20px;left:20px;display:flex;align-items:center;gap:10px;z-index:2;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://32.192.124.14:3000/" alt="QR Demo" style="width:180px;height:180px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
+        <div style="font-size:0.55rem;color:var(--text2);line-height:1.4;">
+          <strong style="color:var(--blue-l);">Demo:</strong><br>
+          umbrellaifts11@gmail.com<br>
+          <span style="font-family:'JetBrains Mono',monospace;">Infodets2024!</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 2: PROBLEMA + PILARES ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <div style="display:grid;grid-template-columns:1fr auto 0.8fr;gap:16px;flex:1;align-items:center;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <h2 style="margin:0 0 0.25em 0;font-size:clamp(1.1rem,2vw,1.6rem);">⚠️ El Problema</h2>
+          <div class="p-item"><span class="pi-icon">📑</span><div><h4>Información dispersa</h4><p>Documentos oficiales sin un punto de acceso unificado</p></div></div>
+          <div class="p-item"><span class="pi-icon p2">🔍</span><div><h4>Búsqueda ineficiente</h4><p>Ciudadanos sin encontrar info actualizada entre múltiples fuentes</p></div></div>
+          <div class="p-item"><span class="pi-icon p3">🔄</span><div><h4>Desactualización</h4><p>Repositorios estáticos sin mejora continua del conocimiento</p></div></div>
+          <div class="p-item"><span class="pi-icon p4">🚫</span><div><h4>Sin trazabilidad</h4><p>Consultas sin respuesta ni proceso de resolución registrado</p></div></div>
+        </div>
+        <div class="vdiv"></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <h2 style="margin:0;font-size:clamp(1rem,1.8vw,1.4rem);text-align:center;">🏗️ Pilares</h2>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div style="text-align:center;background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:12px 8px 10px;">
+              <svg viewBox="0 0 100 90" class="svg-pilar" style="width:60px;height:54px;margin:0 auto 4px;display:block;" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 5 L88 22 L88 52 C88 74 50 88 50 88 C50 88 12 74 12 52 L12 22 Z" fill="none" stroke="#00A1E6" stroke-width="2" opacity="0.8"/>
+                <circle cx="50" cy="45" r="7" fill="none" stroke="#FF6B00" stroke-width="2"/>
+                <rect x="47" y="50" width="6" height="9" fill="none" stroke="#FF6B00" stroke-width="2" rx="1"/>
+                <ellipse cx="50" cy="68" rx="18" ry="3.5" fill="none" stroke="#00A1E6" stroke-width="1.4"/>
+                <path d="M32 68 L32 74" stroke="#00A1E6" stroke-width="1.4"/>
+                <path d="M68 68 L68 74" stroke="#00A1E6" stroke-width="1.4"/>
+                <ellipse cx="50" cy="74" rx="18" ry="3.5" fill="none" stroke="#00A1E6" stroke-width="1.4"/>
+                <path d="M32 74 L32 78" stroke="#00A1E6" stroke-width="1.2"/>
+                <path d="M68 74 L68 78" stroke="#00A1E6" stroke-width="1.2"/>
+              </svg>
+              <h4 style="font-size:0.65rem;margin-bottom:3px;color:#fff;">Soberanía de Datos</h4>
+              <p style="font-size:0.54rem;line-height:1.4;">Control absoluto. Qdrant self-hosted e infraestructura propia. El ente público retiene la propiedad de sus datos sin depender de cambios de políticas o tarifas de terceros.</p>
+            </div>
+            <div style="text-align:center;background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:12px 8px 10px;">
+              <svg viewBox="0 0 100 90" class="svg-pilar svg-p2" style="width:60px;height:54px;margin:0 auto 4px;display:block;" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 45 C25 20 75 20 75 45 C75 70 25 70 25 45" fill="none" stroke="#00A1E6" stroke-width="2" opacity="0.8"/>
+                <path d="M38 30 L28 20 L18 30" fill="none" stroke="#00A1E6" stroke-width="1.5"/>
+                <path d="M28 20 L28 38" fill="none" stroke="#00A1E6" stroke-width="1.5"/>
+                <path d="M62 60 L72 70 L82 60" fill="none" stroke="#00A1E6" stroke-width="1.5"/>
+                <path d="M72 70 L72 52" fill="none" stroke="#00A1E6" stroke-width="1.5"/>
+                <circle cx="50" cy="45" r="10" fill="none" stroke="#FF6B00" stroke-width="1.8"/>
+                <circle cx="50" cy="45" r="3" fill="none" stroke="#FF6B00" stroke-width="1.5"/>
+                <path d="M43 39 L50 45 M50 45 L57 39 M50 45 L50 51 M44 51 L56 39" stroke="#FF6B00" stroke-width="1.2" opacity="0.6"/>
+              </svg>
+              <h4 style="font-size:0.65rem;margin-bottom:3px;color:#fff;">Mejora Continua</h4>
+              <p style="font-size:0.54rem;line-height:1.4;">El software no es estático. Un motor automatizado detecta vacíos comparando dudas reales con el repositorio, generando un mapa de ruta para nuevas normativas.</p>
+            </div>
+            <div style="text-align:center;background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:12px 8px 10px;">
+              <svg viewBox="0 0 100 90" class="svg-pilar svg-p3" style="width:60px;height:54px;margin:0 auto 4px;display:block;" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10 L70 22 L50 34 L30 22 Z" fill="none" stroke="#00A1E6" stroke-width="1.8" opacity="0.8"/>
+                <path d="M50 34 L70 46 L50 58 L30 46 Z" fill="none" stroke="#00A1E6" stroke-width="1.8" opacity="0.6"/>
+                <path d="M50 58 L70 70 L50 82 L30 70 Z" fill="none" stroke="#00A1E6" stroke-width="1.8" opacity="0.4"/>
+                <path d="M72 10 L88 20 L72 30 L56 20 Z" fill="none" stroke="#FF6B00" stroke-width="1.5" opacity="0.6"/>
+                <path d="M74 16 L90 26 L74 36" fill="none" stroke="#FF6B00" stroke-width="1.5"/>
+                <path d="M74 36 L74 20" fill="none" stroke="#FF6B00" stroke-width="1.5"/>
+                <path d="M56 20 L56 6" stroke="#FF6B00" stroke-width="1.8"/>
+                <path d="M50 4 L56 0 L62 4" fill="none" stroke="#FF6B00" stroke-width="1.5"/>
+              </svg>
+              <h4 style="font-size:0.65rem;margin-bottom:3px;color:#fff;">Escalabilidad Modular</h4>
+              <p style="font-size:0.54rem;line-height:1.4;">Diseño preparado para el crecimiento. Escalá de 10 a 10.000 documentos indexados sin modificar una línea de código, operando con eficiencia de costos comprobada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 3: ARQUITECTURA DE INTERFAZ ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>🖥️ Arquitectura de Interfaz</h2>
+      <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
+        Blueprint técnico del asistente — lenguaje natural, validación legal y autenticación segura
+      </p>
+      <div class="bp-grid">
+        <div class="bp-side">
+          <div class="bp-card">
+            <div class="bpi">🧠</div>
+            <h4>Lenguaje Natural</h4>
+            <p>Procesamiento con Gemini 3072d. Embeddings semánticos que entienden consultas coloquiales y técnicas.</p>
+          </div>
+          <div class="bp-card" style="border-left-color:var(--red);">
+            <div class="bpi">⚖️</div>
+            <h4>Validación Legal</h4>
+            <p>Citas a documentos oficiales con scoring de confianza. Cada respuesta tiene trazabilidad de fuente.</p>
+          </div>
+          <div class="bp-card" style="border-left-color:#FFB347;">
+            <div class="bpi">🔐</div>
+            <h4>Autenticación Segura</h4>
+            <p>AWS Cognito + JWT custom HS256. Sesiones de 8h sin latencia. 11 permisos granulares por rol.</p>
+          </div>
+        </div>
+        <div class="chat">
+          <div class="chat-h">
+            <span class="dot"></span>
+            <strong>INFODETS</strong>
+            <span>— Asistente IA</span>
+          </div>
+          <div class="chat-body"></div>
+          <div class="chat-in">✏️ Escribí tu consulta aquí…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 4: CASCADA DE DEGRADACIÓN ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>🔒 Protocolo de Seguridad</h2>
+      <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
+        Cascada de Degradación — la IA nunca adivina, siempre valida
+      </p>
+      <div class="staircase" style="flex:1;justify-content:center;align-self:center;">
+        <div class="stair s0">
+          <div class="stair-card">
+            <span class="pct">≥70%</span>
+            <span class="emoji">📚</span>
+            <div class="sc"><h4>Nivel 0 — Docs oficiales</h4><p>Respuesta inmediata con citas a documentos. Fuente rastreable vía Qdrant + Gemini.</p></div>
+          </div>
+          <div class="stair-arrow">▼</div>
+        </div>
+        <div class="stair s1">
+          <div class="stair-card">
+            <span class="pct">≥50%</span>
+            <span class="emoji">🌐</span>
+            <div class="sc"><h4>Nivel 1 — URLs oficiales</h4><p>Scraping con filtro de relevancia. Respuesta con advertencia de confianza reducida + ticket silencioso para que administradores evalúen la respuesta y aprueben el aprendizaje de la IA.</p></div>
+          </div>
+          <div class="stair-arrow">▼</div>
+        </div>
+        <div class="stair s2">
+          <div class="stair-card">
+            <span class="pct">≥30%</span>
+            <span class="emoji">🔎</span>
+            <div class="sc"><h4>Nivel 2 — Búsqueda web</h4><p>Serper API + verificación. Respuesta cautelosa + ticket silencioso para que administradores evalúen y aprueben el aprendizaje de la IA.</p></div>
+          </div>
+          <div class="stair-arrow">▼</div>
+        </div>
+        <div class="stair s3">
+          <div class="stair-card">
+            <span class="pct" style="color:var(--red);">Sin match</span>
+            <span class="emoji">🎫</span>
+            <div class="sc"><h4>Nivel 3 — Escalamiento humano</h4><p>Ticket de consulta a operador vía n8n. El operador responde la consulta y aprueba el aprendizaje. Interfaz de evaluación centralizada para administradores.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 5: GOBERNANZA DE DATOS ════════════ -->
+    <section class="slide slide-pic">
+      <div class="gbar"></div>
+      <h2>📥 Gobernanza de Datos: Pipeline de Ingesta Controlada</h2>
+      <p class="pic-sub" style="font-size:0.6rem;color:var(--text2);margin-bottom:0.4rem;">
+        Ingesta segura — del documento oficial al conocimiento de la IA en 60 segundos
+      </p>
+      <div class="pic-container">
+        <div class="pic-row">
+          <div class="pic-card pic-c1">
+            <div class="pic-step">01</div>
+            <div class="pic-icon">
+              <svg viewBox="0 0 60 60">
+                <rect x="14" y="6" width="32" height="46" rx="4" fill="none" stroke="#00A1E6" stroke-width="1.8"/>
+                <rect x="18" y="12" width="24" height="30" rx="2" fill="none" stroke="#00A1E6" stroke-width="1" opacity="0.4"/>
+                <circle cx="30" cy="50" r="2" fill="#00A1E6"/>
+                <g class="pic-up-group">
+                  <path d="M30 38 L30 18" stroke="#FFB347" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M24 24 L30 18 L36 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+              </svg>
+            </div>
+            <h4>Paso 1: Portal del Usuario Calificado</h4>
+            <p>Un funcionario habilitado sube el documento oficial (PDF, Ley, Manual) mediante un formulario seguro en el sistema, indicando su jerarquía institucional. Solo personal autorizado con credenciales verificadas puede iniciar el proceso de ingesta.</p>
+          </div>
+          <div class="pic-arrow pic-a1">
+            <div class="pic-lock">🔒</div>
+            <svg class="pic-chevron" viewBox="0 0 40 40">
+              <path d="M4 8 L30 20 L4 32" fill="none" stroke="#00A1E6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="pic-particles"><span class="pp1"></span><span class="pp2"></span><span class="pp3"></span></div>
+          </div>
+          <div class="pic-card pic-c2">
+            <div class="pic-step">02</div>
+            <div class="pic-icon">
+              <svg viewBox="0 0 60 60">
+                <path d="M40 24 A16 16 0 1 1 20 36" fill="none" stroke="#00A1E6" stroke-width="2" stroke-linecap="round"/>
+                <path d="M20 24 A16 16 0 1 0 40 36" fill="none" stroke="#00A1E6" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                <g class="pic-gear-g">
+                  <circle cx="30" cy="30" r="9" fill="none" stroke="#FFB347" stroke-width="1.8"/>
+                  <circle cx="30" cy="30" r="3" fill="#FFB347" opacity="0.5"/>
+                  <line x1="22" y1="24" x2="20" y2="21" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="38" y1="24" x2="40" y2="21" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="22" y1="36" x2="20" y2="39" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="38" y1="36" x2="40" y2="39" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="24" y1="22" x2="24" y2="19" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="36" y1="22" x2="36" y2="19" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="24" y1="38" x2="24" y2="41" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="36" y1="38" x2="36" y2="41" stroke="#FFB347" stroke-width="1.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <h4>Paso 2: Procesamiento Invisible (FastAPI)</h4>
+            <p>Limpieza en backend. El sistema extrae el texto, lo fragmenta en bloques lógicos jerárquicos (chunks Parent-Child de 300 a 1000 tokens) y notifica al orquestador n8n para enviar la solicitud de aprobación al administrador.</p>
+          </div>
+          <div class="pic-arrow pic-a2">
+            <div class="pic-lock">🔒</div>
+            <svg class="pic-chevron" viewBox="0 0 40 40">
+              <path d="M4 8 L30 20 L4 32" fill="none" stroke="#00A1E6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="pic-particles"><span class="pp1"></span><span class="pp2"></span><span class="pp3"></span></div>
+          </div>
+          <div class="pic-card pic-c3">
+            <div class="pic-step">03</div>
+            <div class="pic-icon">
+              <svg viewBox="0 0 60 60">
+                <ellipse cx="30" cy="16" rx="16" ry="5" fill="none" stroke="#00A1E6" stroke-width="1.8"/>
+                <path d="M14 16 L14 44" stroke="#00A1E6" stroke-width="1.8"/>
+                <path d="M46 16 L46 44" stroke="#00A1E6" stroke-width="1.8"/>
+                <ellipse cx="30" cy="44" rx="16" ry="5" fill="none" stroke="#00A1E6" stroke-width="1.8"/>
+                <path d="M18 26 L42 26" stroke="#00A1E6" stroke-width="1" opacity="0.4"/>
+                <path d="M18 34 L42 34" stroke="#00A1E6" stroke-width="1" opacity="0.4"/>
+                <ellipse cx="30" cy="44" rx="16" ry="5" class="pic-db-bot" fill="none" stroke="#FFB347" stroke-width="1.5"/>
+                <circle cx="48" cy="12" r="6" fill="none" stroke="#FFB347" stroke-width="1.2"/>
+                <path d="M48 12 L48 9 M48 12 L52 12" stroke="#FFB347" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h4>Paso 3: Activación Instantánea y Gobernada</h4>
+            <p>El administrador recibe la alerta y aprueba la ingesta con un solo clic. Los vectores se inyectan en Qdrant y la IA aprende la nueva normativa en menos de 60 segundos. Cada ingesta queda registrada en el panel de auditoría.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 6: DIVIDER E2 ════════════ -->
+    <section class="slide divider">
+      <div class="gbar"></div>
+      <div class="dl" style="background:linear-gradient(90deg,var(--blue),var(--blue-l));"></div>
+      <h2 style="color:var(--blue-l);">Arquitectura Técnica</h2>
+      <p>Arquitectura · Seguridad · Motor · Pipeline · Escalabilidad</p>
+    </section>
+
+    <!-- ════════════ 7: ARQUITECTURA MODULAR ════════════ -->
+    <section class="slide" style="padding:0;justify-content:center;align-items:center;">
+      <div class="gbar"></div>
+      <img src="img/Imagen4.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="Arquitectura Modular">
+    </section>
+
+    <!-- ════════════ 8: SEGURIDAD ZERO TRUST ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>🛡️ Seguridad Zero Trust</h2>
+      <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
+        Arquitectura de Confianza Cero — nadie entra sin autorización
+      </p>
+      <div class="g2">
+        <div class="card" style="border-left:3px solid var(--blue);text-align:center;">
+          <div class="ci">🔐</div><h4>AWS Cognito</h4>
+          <p>User Pool con autenticación USER_PASSWORD_AUTH. MFA y verificación en cada acceso.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--blue-l);text-align:center;">
+          <div class="ci">🔑</div><h4>JWT Custom HS256</h4>
+          <p>Token de 8h de duración. Evita latencia de Cognito en cada request. Sesión persistente.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red);text-align:center;">
+          <div class="ci">👥</div><h4>RBAC — 11 Permisos</h4>
+          <p>Matriz de perfiles: Ciudadano, Usuario Interno, Administrador. Control granular por endpoint.</p>
+        </div>
+        <div class="card" style="border-left:3px solid #FFB347;text-align:center;">
+          <div class="ci">🔍</div><h4>Middleware Estricto</h4>
+          <p>require_permiso() en cada endpoint. Verifica JWT + permiso antes de ejecutar cualquier acción.</p>
+        </div>
+      </div>
+      <div style="margin-top:0.6rem;font-size:0.6rem;background:rgba(0,114,187,0.05);border-radius:6px;padding:8px 12px;border:1px solid rgba(0,114,187,0.08);">
+        <strong style="color:var(--blue-l);">🔐 Anillos de identidad:</strong>
+        <span style="color:var(--text2);"> Nadie entra sin pasar por Cognito, verificación multifactor (MFA), token JWT y autorización estricta por permiso.</span>
+      </div>
+    </section>
+
+    <!-- ════════════ 9: MOTOR COGNITIVO ════════════ -->
+    <section class="slide" style="position:relative;">
+      <div class="gbar"></div>
+      <h2 class="motor-title">⚡ El Motor Cognitivo: Resiliencia y Alta Disponibilidad</h2>
+      <div class="motor-diagram">
+        <svg class="motor-arrows" id="motorArrowsSvg" viewBox="0 0 1000 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrBlue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#00A1E6"/></marker>
+            <marker id="arrAmber" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#FFB347"/></marker>
+          </defs>
+          <line class="motor-default-line" x1="265" y1="300" x2="425" y2="300" stroke="#00A1E6" stroke-width="2.5" marker-end="url(#arrBlue)"/>
+          <circle r="4" fill="#00A1E6" class="motor-pulse-anim"><animateMotion dur="2s" repeatCount="indefinite" path="M265,300 L425,300"/></circle>
+          <circle r="3" fill="#00A1E6" class="motor-pulse-anim" opacity="0.5"><animateMotion dur="2s" repeatCount="indefinite" begin="1s" path="M265,300 L425,300"/></circle>
+          <path class="motor-default-line" d="M500,230 L500,114 L770,114" fill="none" stroke="#00A1E6" stroke-width="2.5" marker-end="url(#arrBlue)"/>
+          <circle r="3.5" fill="#00A1E6" class="motor-pulse-anim"><animateMotion dur="2.5s" repeatCount="indefinite" path="M500,230 L500,114 L770,114"/></circle>
+          <text x="515" y="140" fill="#00A1E6" font-size="11" font-weight="700" font-family="Inter,sans-serif">No</text>
+          <path d="M500,370 L500,518 L730,518" fill="none" stroke="rgba(255,179,71,0.4)" stroke-width="2.5" stroke-dasharray="8 6" class="motor-ants" marker-end="url(#arrAmber)"/>
+          <path d="M500,370 L500,518 L730,518" fill="none" class="motor-ants-glow" marker-end="url(#arrAmber)"/>
+          <text x="515" y="490" fill="#FFB347" font-size="11" font-weight="700" font-family="Inter,sans-serif">Sí</text>
+        </svg>
+        <div class="motor-block motor-gemini">
+          <div class="motor-3d"><div class="motor-icon">⚡</div><h4>Gemini 2.0 Flash-lite</h4><p>Modelo principal seleccionado por su velocidad extrema y bajo costo operativo para razonamiento lógico.</p></div>
+        </div>
+        <div class="motor-diamond-wrap" onmouseenter="document.getElementById('motorArrowsSvg').pauseAnimations();document.querySelector('.motor-diagram').classList.add('diamond-hover')" onmouseleave="document.getElementById('motorArrowsSvg').unpauseAnimations();document.querySelector('.motor-diagram').classList.remove('diamond-hover')">
+          <div class="motor-diamond"><p>¿Pico de demanda o límite de API (Error 429) superado?</p></div>
+        </div>
+        <div class="motor-block motor-success"><div><p>Respuesta Entregada Inmediatamente</p></div></div>
+        <div class="motor-block motor-groq">
+          <div class="motor-3d"><div class="motor-icon">🔄</div><h4>Desvío a Groq (Llama-3.3-70b)</h4><p>Tráfico redirigido en milisegundos para absorber la sobrecarga.</p></div>
+        </div>
+        <div class="motor-note"><strong>🔀 Enrutamiento Dinámico</strong><span>El ciudadano nunca recibe un error de servidor saturado. La arquitectura garantiza que el sistema siempre responde.</span></div>
+      </div>
+    </section>
+
+    <!-- ════════════ 10: PIPELINE RAG ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>🧠 Pipeline RAG — Del Query a la Respuesta</h2>
+      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.2rem;">Recuperación híbrida con HyDE, Query Expansion y Reranking vía Cohere</p>
+      <div class="pipe" style="font-size:0.5rem;margin-bottom:0.15rem;">
+        <div class="ps"><strong>🔤 Query</strong><br>Usuario</div><span class="pa">→</span>
+        <div class="ps"><strong>📐 Embed</strong><br>Cohere 1024d</div><span class="pa">→</span>
+        <div class="ps"><strong>🔀 Cache</strong><br>cos≥0.95/24h</div><span class="pa">→</span>
+        <div class="ps"><strong>🔍 Híbrido*</strong><br>Qdrant+HyDE+QExp</div><span class="pa">→</span>
+        <div class="ps"><strong>📊 Rerank</strong><br>Cohere v3.5</div><span class="pa">→</span>
+        <div class="ps"><strong>⚖️ Confianza</strong><br>umbral 0.40</div><span class="pa">→</span>
+        <div class="ps"><strong>🤖 Gemini</strong><br>Flash-lite</div><span class="pa">→</span>
+        <div class="ps"><strong>🔄 Groq</strong><br>fallback</div>
+      </div>
+      <div style="font-size:0.45rem;color:var(--text2);margin-bottom:0.3rem;">* HyDE + Query Expansion corren en paralelo con Qdrant vía ThreadPoolExecutor</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;">
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:1rem;">📥</span><strong style="font-size:0.7rem;color:var(--blue-l);">Ingesta — Parent-Child Retrieval</strong></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:1;">
+              <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:6px 8px;border-left:2px solid var(--blue);display:flex;flex-direction:column;justify-content:center;">
+                <strong style="color:#fff;font-size:0.6rem;">Parent chunks</strong>
+                <span style="color:var(--text2);font-size:0.5rem;">Contexto para LLM · <span style="color:var(--blue-l);">1.500 chars</span> <span style="color:#666;">overlap 150</span></span>
+                <div style="margin-top:4px;display:flex;gap:2px;"><div style="flex:1;height:3px;border-radius:2px;background:var(--blue);"></div><div style="flex:1;height:3px;border-radius:2px;background:var(--blue);"></div><div style="flex:1;height:3px;border-radius:2px;background:var(--blue);"></div><div style="flex:1;height:3px;border-radius:2px;background:var(--blue);opacity:0.5;"></div><div style="flex:1;height:3px;border-radius:2px;background:var(--blue);opacity:0.3;"></div></div>
+              </div>
+              <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:6px 8px;border-left:2px solid var(--blue-l);display:flex;flex-direction:column;justify-content:center;">
+                <strong style="color:#fff;font-size:0.6rem;">Child chunks</strong>
+                <span style="color:var(--text2);font-size:0.5rem;">Embedding + búsqueda · <span style="color:var(--blue-l);">500 chars</span> <span style="color:#666;">overlap 50</span></span>
+                <div style="margin-top:4px;display:flex;gap:2px;"><div style="flex:0 0 6px;height:3px;border-radius:2px;background:var(--blue-l);"></div><div style="flex:0 0 6px;height:3px;border-radius:2px;background:var(--blue-l);"></div><div style="flex:0 0 6px;height:3px;border-radius:2px;background:var(--blue-l);opacity:0.5;"></div></div>
+              </div>
+            </div>
+            <div style="background:rgba(255,179,71,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid #FFB347;">
+              <strong style="color:#fff;font-size:0.55rem;">Metadata</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">  Título · Resolución · Decreto · Categoría · Dependencia</span>
+            </div>
+            <div style="background:rgba(74,222,128,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid #4ade80;">
+              <strong style="color:#fff;font-size:0.55rem;">Embedding</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">  Cohere embed-multilingual-v3.0 · <span style="color:#4ade80;">1024d</span> · batch 96</span>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:1rem;">⚙️</span><strong style="font-size:0.7rem;color:var(--blue-l);">Configuración del Pipeline</strong></div>
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.5rem;color:var(--text2);">
+            <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid var(--blue);display:flex;flex-direction:column;justify-content:center;">
+              <strong style="color:#fff;font-size:0.6rem;">HyDE (paralelo)</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">Groq → hipótesis → Cohere → Qdrant</span>
+              <span style="color:var(--blue-l);font-size:0.45rem;">temp 0.3 · max 150 tokens</span>
+            </div>
+            <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid var(--blue-l);display:flex;flex-direction:column;justify-content:center;">
+              <strong style="color:#fff;font-size:0.6rem;">Query Expansion (condicional)</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">solo si score &lt; 0.40 → 2 variantes</span>
+              <span style="color:var(--blue-l);font-size:0.45rem;">temp 0.4 · top-5 c/u</span>
+            </div>
+            <div style="background:rgba(255,179,71,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid #FFB347;display:flex;flex-direction:column;justify-content:center;">
+              <strong style="color:#fff;font-size:0.6rem;">Rerank (Cohere v3.5)</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">Reordena por relevancia real</span>
+              <span style="color:#FFB347;font-size:0.45rem;">top_n=7 · metadata + query</span>
+            </div>
+            <div style="background:rgba(74,222,128,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid #4ade80;display:flex;flex-direction:column;justify-content:center;">
+              <strong style="color:#fff;font-size:0.6rem;">Cache Semántico</strong>
+              <span style="color:var(--text2);font-size:0.5rem;">Cosine &gt; 0.95 · TTL 24h</span>
+              <span style="color:#4ade80;font-size:0.45rem;">PostgreSQL + ARRAY[Float]</span>
+            </div>
+            <div style="background:rgba(227,6,19,0.04);border-radius:6px;padding:5px 8px;border-left:2px solid var(--red);grid-column:1/-1;display:flex;flex-direction:column;justify-content:center;">
+              <strong style="color:var(--red);font-size:0.55rem;">Umbral de Confianza: 0.40</strong>
+              <span style="color:var(--text2);font-size:0.45rem;">≥0.40 Local (Qdrant) · &lt;0.40 URLs oficiales · &lt;0.40 Búsqueda web · Vacío → Escalamiento humano</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 11: ESCALABILIDAD ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>📈 Escalabilidad Sin Fricción</h2>
+      <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.35rem;">
+        De 10 a 10.000+ documentos, la arquitectura crece sin fricción
+      </p>
+      <div class="g4" style="flex:0 0 auto;">
+        <div class="card" style="padding:10px 12px;"><div class="ci" style="font-size:1.3rem;">🐳</div><h4 style="font-size:0.75rem;">Frontend</h4><p style="font-size:0.55rem;">Next.js 16 en Docker independiente. Build multi-stage: imagen optimizada 100MB. Sin depender del backend para servir.</p><div style="margin-top:4px;font-size:0.5rem;color:var(--blue-l);">puerto 3000</div></div>
+        <div class="card" style="padding:10px 12px;"><div class="ci" style="font-size:1.3rem;">⚙️</div><h4 style="font-size:0.75rem;">Backend</h4><p style="font-size:0.55rem;">FastAPI como servicio systemd. Recarga con <code>sudo systemctl restart fastapi</code>. Zero downtime en migraciones Alembic.</p><div style="margin-top:4px;font-size:0.5rem;color:var(--blue-l);">puerto 8000</div></div>
+        <div class="card" style="padding:10px 12px;"><div class="ci" style="font-size:1.3rem;">📐</div><h4 style="font-size:0.75rem;">Qdrant</h4><p style="font-size:0.55rem;">Self-hosted en Docker. Datos persistidos en volumen. Sin vendor lock-in (vs Pinecone ~$70/mes). Si supera 10K chunks → escalar a t4g.medium.</p><div style="margin-top:4px;font-size:0.5rem;color:var(--blue-l);">puerto 6333</div></div>
+        <div class="card" style="padding:10px 12px;"><div class="ci" style="font-size:1.3rem;">🔄</div><h4 style="font-size:0.75rem;">n8n + Automación</h4><p style="font-size:0.55rem;">Workflows en Docker. Orquesta ingesta, resolución de consultas y notificaciones. Desacoplado del flujo principal RAG.</p><div style="margin-top:4px;font-size:0.5rem;color:var(--blue-l);">puerto 5678</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;margin-top:0.3rem;">
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:0.9rem;">☁️</span><strong style="font-size:0.65rem;color:var(--blue-l);">Infraestructura AWS</strong></div>
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;">
+            <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:8px 10px;border-left:2px solid var(--blue);display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.55rem;color:var(--text2);"><strong style="color:#fff;">EC2</strong> t3.small</div>
+              <div style="font-size:0.5rem;color:#666;">2GB RAM · Ubuntu 24.04</div>
+            </div>
+            <div style="background:rgba(0,161,230,0.04);border-radius:6px;padding:8px 10px;border-left:2px solid var(--blue-l);display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.55rem;color:var(--text2);"><strong style="color:#fff;">RDS</strong> db.t4g.micro</div>
+              <div style="font-size:0.5rem;color:#666;">PostgreSQL 17 · 18 tablas</div>
+            </div>
+            <div style="background:rgba(74,222,128,0.04);border-radius:6px;padding:8px 10px;border-left:2px solid #4ade80;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.55rem;color:var(--text2);"><strong style="color:#fff;">Cognito</strong> serverless</div>
+              <div style="font-size:0.5rem;color:#666;">auto-escala · JWT HS256</div>
+            </div>
+            <div style="background:rgba(255,179,71,0.04);border-radius:6px;padding:8px 10px;border-left:2px solid #FFB347;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.55rem;color:var(--text2);"><strong style="color:#fff;">CI/CD</strong> GitHub Actions</div>
+              <div style="font-size:0.5rem;color:#666;">SSH deploy automático</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:0.9rem;">🔑</span><strong style="font-size:0.65rem;color:var(--blue-l);">¿Por qué escala sin fricción?</strong></div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:5px;">
+            <div style="background:rgba(0,114,187,0.04);border-radius:6px;padding:7px 10px;border:1px solid rgba(0,114,187,0.06);">
+              <strong style="color:#fff;font-size:0.55rem;">🧩 Desacoplamiento</strong>
+              <div style="color:var(--text2);font-size:0.5rem;">Cada servicio escala independientemente (Docker + systemd)</div>
+            </div>
+            <div style="background:rgba(0,114,187,0.04);border-radius:6px;padding:7px 10px;border:1px solid rgba(0,114,187,0.06);">
+              <strong style="color:#fff;font-size:0.55rem;">🔁 CI/CD automatizado</strong>
+              <div style="color:var(--text2);font-size:0.5rem;">Push a main → deploy sin intervención manual</div>
+            </div>
+            <div style="background:rgba(0,114,187,0.04);border-radius:6px;padding:7px 10px;border:1px solid rgba(0,114,187,0.06);">
+              <strong style="color:#fff;font-size:0.55rem;">☁️ Cloud nativo</strong>
+              <div style="color:var(--text2);font-size:0.5rem;">RDS + Cognito escalan sin tocar servidores</div>
+            </div>
+            <div style="background:rgba(0,114,187,0.04);border-radius:6px;padding:7px 10px;border:1px solid rgba(0,114,187,0.06);">
+              <strong style="color:#fff;font-size:0.55rem;">📋 .env-driven</strong>
+              <div style="color:var(--text2);font-size:0.5rem;">dev/staging/production con solo cambiar variables</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 12: DIVIDER E3 ════════════ -->
+    <section class="slide divider">
+      <div class="gbar"></div>
+      <div class="dl" style="background:linear-gradient(90deg,var(--red),var(--blue-l));"></div>
+      <h2 style="color:var(--blue-l);">Síntesis y Estado del Proyecto</h2>
+      <p>Motor Mejora Continua · Signos Vitales · Paradigma · Próximos Pasos</p>
+    </section>
+
+    <!-- ════════════ 13: MOTOR DE MEJORA CONTINUA ════════════ -->
+    <section class="slide slide-mec">
+      <div class="gbar"></div>
+      <h2 class="mec-title" style="font-size:clamp(0.8rem,1.4vw,1.1rem);">El Motor de Mejora Continua: Transformando Vacíos en Gobernanza</h2>
+      <div class="mec-container">
+        <div class="mec-center">
+          <div class="mec-ring">
+            <svg viewBox="0 0 200 200">
+              <defs><marker id="mecArr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#00A1E6"/></marker></defs>
+              <path d="M100 18 A82 82 0 0 1 182 100" fill="none" stroke="#00A1E6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#mecArr)"/>
+              <path d="M182 100 A82 82 0 0 1 100 182" fill="none" stroke="#00A1E6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#mecArr)"/>
+              <path d="M100 182 A82 82 0 0 1 18 100" fill="none" stroke="#00A1E6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#mecArr)"/>
+              <path d="M18 100 A82 82 0 0 1 100 18" fill="none" stroke="#00A1E6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#mecArr)"/>
+            </svg>
+          </div>
+          <div class="mec-dashboard">
+            <svg viewBox="0 0 80 80">
+              <rect x="10" y="8" width="60" height="40" rx="3" fill="none" stroke="#FFB347" stroke-width="1.8"/>
+              <rect x="16" y="32" width="8" height="12" fill="#FFB347" opacity="0.7"/>
+              <rect x="28" y="24" width="8" height="20" fill="#FFB347" opacity="0.7"/>
+              <rect x="40" y="18" width="8" height="26" fill="#FFB347" opacity="0.7"/>
+              <rect x="52" y="28" width="8" height="16" fill="#FFB347" opacity="0.7"/>
+              <polyline points="16,34 24,30 32,36 40,24 48,32 56,28 64,34" fill="none" stroke="#00A1E6" stroke-width="1.3"/>
+              <circle cx="40" cy="56" r="7" fill="none" stroke="#fff" stroke-width="1.3"/>
+              <circle cx="40" cy="56" r="2.5" fill="#fff" opacity="0.8"/>
+            </svg>
+          </div>
+        </div>
+        <svg class="mec-lines" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+          <path id="mL1" d="M500,500 L100,100" fill="none" stroke="rgba(0,161,230,0.12)" stroke-width="2"/>
+          <circle r="4" fill="#00A1E6" opacity="0.8"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#mL1"/></animateMotion></circle>
+          <path id="mL2" d="M500,500 L900,100" fill="none" stroke="rgba(0,161,230,0.12)" stroke-width="2"/>
+          <circle r="4" fill="#00A1E6" opacity="0.8"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#mL2"/></animateMotion></circle>
+          <path id="mL3" d="M500,500 L900,900" fill="none" stroke="rgba(0,161,230,0.12)" stroke-width="2"/>
+          <circle r="4" fill="#00A1E6" opacity="0.8"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#mL3"/></animateMotion></circle>
+          <path id="mL4" d="M500,500 L100,900" fill="none" stroke="rgba(0,161,230,0.12)" stroke-width="2"/>
+          <circle r="4" fill="#00A1E6" opacity="0.8"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#mL4"/></animateMotion></circle>
+        </svg>
+        <div class="mec-card mec-tl">
+          <strong>1. Detección de Vacío</strong>
+          <p>Un ciudadano consulta un tema (ej. "Subsidios de Vivienda 2026") que no existe en la base documental local (confianza &lt; 70%).</p>
+        </div>
+        <div class="mec-card mec-tr">
+          <strong>2. Respuesta Cautelosa</strong>
+          <p>El bot proporciona información externa aplicando salvaguardas legales, aclarando explícitamente: "He encontrado esta información en fuentes externas (no oficiales)".</p>
+        </div>
+        <div class="mec-card mec-br">
+          <strong>3. Generación de Ticket</strong>
+          <p>El orquestador interno (n8n) detecta la anomalía en milisegundos y genera un reporte automático integrado al flujo de trabajo del equipo.</p>
+        </div>
+        <div class="mec-card mec-bl">
+          <strong>4. Alerta Estratégica al Administrador</strong>
+          <p>El panel de control compila métricas y muestra los hot topics no resueltos. Envía notificaciones accionables: "5 usuarios preguntaron por Tema X. Sugerencia: Subir normativa correspondiente".</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 14: SIGNOS VITALES ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2>💚 Signos Vitales del Proyecto</h2>
+      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.1rem;">El MVP ya late — desplegado y operativo en AWS</p>
+      <svg class="vs-hb" viewBox="0 0 600 40" preserveAspectRatio="none">
+        <line class="vs-hb-line" x1="0" y1="20" x2="600" y2="20"/>
+        <path d="M0,20 Q40,20 50,20 L80,20 L85,8 L95,32 L105,12 L115,28 L125,16 L135,24 L145,18 L155,22 L165,20 L180,20 Q200,20 210,20 L240,20 L245,8 L255,32 L265,12 L275,28 L285,16 L295,24 L305,18 L315,22 L325,20 L340,20 Q360,20 370,20 L400,20 L405,8 L415,32 L425,12 L435,28 L445,16 L455,24 L465,18 L475,22 L485,20 L500,20 Q520,20 530,20 L560,20 L570,18 L580,22 L590,20 L600,20"/>
+        <text x="8" y="14" fill="#4ade80" font-size="6" font-family="monospace">♥</text>
+      </svg>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex:0 0 auto;">
+        <div class="vs-fade" style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:10px;padding:10px 8px;text-align:center;">
+          <div style="font-size:1.3rem;margin-bottom:2px;"><span class="vs-heart">✅</span></div>
+          <div class="vs-num">100%</div>
+          <div style="font-size:0.6rem;color:#fff;font-weight:600;margin-top:2px;">MVP Completo</div>
+          <div style="font-size:0.5rem;color:var(--text2);">Frontend + Backend + Pipeline RAG</div>
+          <div class="vs-bar"><div class="vs-bar-fill" style="--pct:100%;"></div></div>
+        </div>
+        <div class="vs-fade" style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:10px;padding:10px 8px;text-align:center;">
+          <div style="font-size:1.3rem;margin-bottom:2px;">📊</div>
+          <div class="vs-num">28/35</div>
+          <div style="font-size:0.6rem;color:#fff;font-weight:600;margin-top:2px;">User Stories</div>
+          <div style="font-size:0.5rem;color:var(--text2);">80% cobertura · Core funcional completo</div>
+          <div class="vs-bar"><div class="vs-bar-fill" style="--pct:80%;"></div></div>
+        </div>
+        <div class="vs-fade" style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.08);border-radius:10px;padding:10px 8px;text-align:center;">
+          <div style="font-size:1.3rem;margin-bottom:2px;">🚀</div>
+          <div class="vs-num">S5</div>
+          <div style="font-size:0.6rem;color:#fff;font-weight:600;margin-top:2px;">Sprint de Testeo</div>
+          <div style="font-size:0.5rem;color:var(--text2);">Entrega final · 28 Junio 2025</div>
+          <div class="vs-bar"><div class="vs-bar-fill" style="--pct:100%;"></div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;margin-top:0.2rem;">
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.06);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+          <span style="font-size:1.1rem;">☁️</span>
+          <div style="flex:1;"><div style="font-size:0.6rem;color:#fff;font-weight:600;">EC2 t3.small</div><div style="font-size:0.48rem;color:var(--text2);">Ubuntu 24.04 · 2GB RAM</div></div>
+          <span class="vs-dot" style="--c:#4ade80;background:#4ade80;"></span>
+        </div>
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.06);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+          <span style="font-size:1.1rem;">🐳</span>
+          <div style="flex:1;"><div style="font-size:0.6rem;color:#fff;font-weight:600;">4 Servicios</div><div style="font-size:0.48rem;color:var(--text2);">Frontend · Backend · Qdrant · n8n</div></div>
+          <span class="vs-dot" style="--c:#4ade80;background:#4ade80;"></span>
+        </div>
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.06);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+          <span style="font-size:1.1rem;">🔐</span>
+          <div style="flex:1;"><div style="font-size:0.6rem;color:#fff;font-weight:600;">Cognito</div><div style="font-size:0.48rem;color:var(--text2);">Auth serverless · JWT 8h</div></div>
+          <span class="vs-dot" style="--c:#4ade80;background:#4ade80;"></span>
+        </div>
+        <div style="background:rgba(0,114,187,0.03);border:1px solid rgba(0,114,187,0.06);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+          <span style="font-size:1.1rem;">🔁</span>
+          <div style="flex:1;"><div style="font-size:0.6rem;color:#fff;font-weight:600;">CI/CD</div><div style="font-size:0.48rem;color:var(--text2);">GitHub Actions · Deploy automático</div></div>
+          <span class="vs-dot" style="--c:#4ade80;background:#4ade80;"></span>
+        </div>
+      </div>
+      <div style="margin-top:auto;font-size:0.55rem;background:linear-gradient(90deg,rgba(0,114,187,0.06),rgba(0,161,230,0.04));border-radius:6px;padding:6px 12px;border:1px solid rgba(0,114,187,0.08);text-align:center;display:flex;align-items:center;justify-content:center;gap:14px;">
+        <span><span class="vs-dot" style="--c:#4ade80;background:#4ade80;width:8px;height:8px;"></span> <strong style="color:#4ade80;">Online</strong></span>
+        <span style="color:var(--text2);">32.192.124.14:3000</span>
+        <span style="color:var(--text2);">|</span>
+        <span style="color:var(--text2);">Pipeline RAG funcional</span>
+      </div>
+    </section>
+
+    <!-- ════════════ 15: CAMBIO DE PARADIGMA ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2 style="font-size:clamp(0.85rem,1.5vw,1.15rem);">🌟 Cambio de Paradigma</h2>
+      <p style="font-size:0.55rem;color:var(--text2);margin-bottom:0.15rem;">Del software institucional estático al Sistema Vivo</p>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;flex:0 0 auto;">
+        <div style="background:rgba(227,6,19,0.02);border:1px solid rgba(227,6,19,0.12);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:3px;">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:1rem;">📦</span><span style="color:var(--red);font-size:0.6rem;font-weight:600;">Caja Negra Tradicional</span></div>
+          <div class="cp-item" style="background:rgba(227,6,19,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--red);font-size:0.48rem;color:var(--text2);">❌ Software <strong style="color:#fff;">estático que no aprende</strong></div>
+          <div class="cp-item" style="background:rgba(227,6,19,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--red);font-size:0.48rem;color:var(--text2);">❌ Consultas sin respuesta <strong style="color:#fff;">se pierden</strong></div>
+          <div class="cp-item" style="background:rgba(227,6,19,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--red);font-size:0.48rem;color:var(--text2);">❌ Actualización <strong style="color:#fff;">manual y lenta</strong></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 2px;">
+          <div class="cp-vs" style="font-size:0.7rem;font-weight:700;color:var(--blue-l);background:rgba(0,161,230,0.08);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">⚡</div>
+          <div style="font-size:0.45rem;color:var(--text2);margin-top:2px;">VS</div>
+        </div>
+        <div style="background:rgba(0,161,230,0.02);border:1px solid rgba(0,161,230,0.12);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:3px;" class="cp-glow">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:1rem;">🧠</span><span style="color:var(--blue-l);font-size:0.6rem;font-weight:600;">Sistema Vivo — INFODETS</span></div>
+          <div class="cp-item" style="background:rgba(0,161,230,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--blue);font-size:0.48rem;color:var(--text2);">✅ Inteligencia <strong style="color:#fff;">evolutiva y autónoma</strong></div>
+          <div class="cp-item" style="background:rgba(0,161,230,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--blue);font-size:0.48rem;color:var(--text2);">✅ Vacíos de hoy → <strong style="color:#fff;">mapa de ruta legislativo</strong></div>
+          <div class="cp-item" style="background:rgba(0,161,230,0.04);border-radius:4px;padding:3px 6px;border-left:2px solid var(--blue);font-size:0.48rem;color:var(--text2);">✅ Se fortalece con <strong style="color:#fff;">cada consulta</strong></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin:0.15rem 0;">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(0,161,230,0.2));"></div>
+        <span style="font-size:0.5rem;color:var(--text2);white-space:nowrap;">Decisiones técnicas que habilitan el cambio</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,161,230,0.2),transparent);"></div>
+      </div>
+      <div class="g3" style="flex:1;align-content:center;">
+        <div class="card" style="padding:8px 10px;"><div class="ci" style="font-size:1.2rem;color:var(--blue);">🗄️</div><h4 style="font-size:0.65rem;">Qdrant Self-hosted <span style="color:var(--red);">≠</span> Pinecone</h4><p style="font-size:0.5rem;">Datos soberanos sin depender de SaaS externo. Ahorro ~$70/mes vs Pinecone. Escala a t4g.medium si &gt;10K vectores.</p></div>
+        <div class="card" style="padding:8px 10px;"><div class="ci" style="font-size:1.2rem;color:var(--blue-l);">🔑</div><h4 style="font-size:0.65rem;">JWT Custom 8h <span style="color:var(--red);">≠</span> Cognito directo</h4><p style="font-size:0.5rem;">Token firmado HS256 local. Evita latencia de Cognito en cada request. Renovación cada 8h con refresh token.</p></div>
+        <div class="card" style="padding:8px 10px;"><div class="ci" style="font-size:1.2rem;color:var(--red);">⚡</div><h4 style="font-size:0.65rem;">FastAPI directo <span style="color:var(--red);">≠</span> n8n para PDFs</h4><p style="font-size:0.5rem;">Procesamiento de PDFs vía FastAPI (más control, menor latencia). n8n orquesta notificaciones y flujos administrativos.</p></div>
+      </div>
+      <div class="quote" style="margin:0.1rem 0 0;font-size:0.55rem;border-left-color:var(--blue-l);">"Estamos dejando atrás la caja negra. Infodets es un sistema vivo que transforma consultas sin respuesta en conocimiento institucional."</div>
+    </section>
+
+    <!-- ════════════ 16: PRÓXIMOS PASOS ════════════ -->
+    <section class="slide">
+      <div class="gbar"></div>
+      <h2 style="font-size:clamp(1rem,1.7vw,1.3rem);">🚀 Próximos Pasos</h2>
+      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.15rem;">El camino a producción — lo que falta y lo que viene</p>
+      <div class="g3" style="flex:1;grid-template-rows:1fr 1fr;gap:5px;">
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">🔒</span><h4 style="font-size:0.75rem;margin:0;">Seguridad</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">SSL + nginx</strong> — HTTPS, dominio y reverse proxy</li>
+            <li><strong style="color:#fff;">Rate limiting</strong> — proteger endpoints por usuario/IP</li>
+            <li><strong style="color:#fff;">Secrets Manager</strong> — migrar .env a Parameter Store</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">🧠</span><h4 style="font-size:0.75rem;margin:0;">Pipeline RAG</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">Parent-Child Retrieval</strong> — 1500/500 chars</li>
+            <li><strong style="color:#fff;">Cache Semántico</strong> — cos≥0.95, TTL 24h</li>
+            <li><strong style="color:#fff;">Embedding fallback</strong> — si Cohere falla</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">📊</span><h4 style="font-size:0.75rem;margin:0;">Observabilidad</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">Dashboard integral</strong> — latencia, calidad, tickets</li>
+            <li><strong style="color:#fff;">Alertas proactivas</strong> — Slack/email si falla</li>
+            <li><strong style="color:#fff;">Audit logging</strong> — trazabilidad de admins</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">⚡</span><h4 style="font-size:0.75rem;margin:0;">Escalamiento</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">Qdrant t4g.medium</strong> — 4GB RAM si &gt;10K chunks</li>
+            <li><strong style="color:#fff;">Uvicorn multi-worker</strong> — 4 workers Gunicorn</li>
+            <li><strong style="color:#fff;">ALB + CloudFront</strong> — CDN y alta disponibilidad</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">🏛️</span><h4 style="font-size:0.75rem;margin:0;">On-Premise</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">Docker portátil</strong> — mismo stack en servidor físico</li>
+            <li><strong style="color:#fff;">VPN + red interna</strong> — sin exponer puertos</li>
+            <li><strong style="color:#fff;">Modo offline</strong> — fallback local si no hay APIs</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">🧪</span><h4 style="font-size:0.75rem;margin:0;">Testing</h4></div>
+          <ul style="margin:0;padding:0 0 0 14px;font-size:0.55rem;color:var(--text2);">
+            <li><strong style="color:#fff;">Load testing</strong> — k6 para throughput y cuellos</li>
+            <li><strong style="color:#fff;">Health checks</strong> — backend + Qdrant + RDS</li>
+            <li><strong style="color:#fff;">A/B testing</strong> — estrategias de retrieval en vivo</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:0.1rem;">
+        <div style="background:rgba(74,222,128,0.03);border:1px solid rgba(74,222,128,0.1);border-radius:6px;padding:5px 10px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:0.8rem;">✅</span>
+          <div style="font-size:0.5rem;color:var(--text2);"><strong style="color:#4ade80;">Completado:</strong> HyDE · Query Exp. · Cohere Rerank · Qdrant · CI/CD · Cognito · FastAPI</div>
+        </div>
+        <div style="background:rgba(0,161,230,0.03);border:1px solid rgba(0,161,230,0.1);border-radius:6px;padding:5px 10px;display:flex;align-items:center;gap:5px;">
+          <span style="font-size:0.8rem;">🎯</span>
+          <div style="font-size:0.5rem;color:var(--text2);"><strong style="color:var(--blue-l);">Sprint S5:</strong> Testeo y hardening de producción</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ 17: CIERRE ════════════ -->
+    <section class="slide portada">
+      <div class="gbar"></div>
+      <h1>🙏 Gracias</h1>
+      <div class="gline"></div>
+      <p class="sub" style="font-size:0.8rem;">INFODETS — Sistema de Gestión de Conocimiento Dinámico</p>
+      <div style="margin-top:1.5rem;font-size:0.7rem; color:var(--text2);">
+        <strong style="color:var(--text);">Proyecto Integrador - PP1</strong><br>
+        <span>IFTS 11</span>
+      </div>
+      <div style="margin-top:0.6rem; font-size:0.65rem; color:var(--text2); display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <span>Jorge Loyo</span>
+        <span>Fernando Moya</span>
+        <span>Santiago Isbaner</span>
+      </div>
+      <div style="margin-top:0.6rem;display:flex;gap:12px;justify-content:center;font-size:0.65rem;flex-wrap:wrap;">
+        <span style="background:rgba(0,114,187,0.08);padding:5px 16px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);">
+          📂 <strong style="color:#fff;">GitHub:</strong> github.com/Jorge-Loyo/infodets
+        </span>
+        <span style="background:rgba(0,114,187,0.08);padding:5px 16px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);">
+          🌐 <strong style="color:#fff;">Demo:</strong> 32.192.124.14:3000
+        </span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <button id="btnPrev">◀</button>
+    <button id="btnNext">▶</button>
+  </nav>
+
+  <script>
+    var slides = document.querySelectorAll('.slide');
+    var container = document.getElementById('slides');
+    var dotsEl = document.getElementById('dots');
+    var btnP = document.getElementById('btnPrev');
+    var btnN = document.getElementById('btnNext');
+    var total = slides.length;
+    var current = -1;
+    var expoMap = [0,1,1,1,1,0,2,2,2,2,2,0,3,3,3,3,0];
+    slides.forEach(function(s,i){ if(expoMap[i]) s.setAttribute('data-expo',expoMap[i]); });
+
+    var chatMsgs = [
+      {t:'bot', h:'<strong>¡Hola! 🏛️</strong> Soy el asistente de INFODETS. Consultame sobre trámites, leyes, resoluciones y más.'},
+      {t:'user', h:'¿Qué requisitos necesito para jubilarme en CABA?'},
+      {t:'bot', h:'<strong>Según el Artículo 12° de la Ley N° 5.843:</strong> Los requisitos son: edad mínima 60 años, 30 años de aportes y residencia comprobable en CABA.<br><span style="font-size:0.5rem;color:rgba(0,161,230,0.4);">📄 Fuente: Boletín Oficial N° 6.542 · Confianza: 94%</span>'},
+      {t:'user', h:'¿Y si no cumplo con los años de aportes?'},
+      {t:'bot', h:'<strong>Puede acceder a la moratoria vigente (Ley N° 6.102).</strong> Consulte en la Delegación más cercana con su DNI y CBU.<br><span style="font-size:0.5rem;color:rgba(0,161,230,0.4);">📄 Fuente: Resolución N° 892/2025 · Confianza: 87%</span>'},
+    ];
+    var chatTimer;
+
+    function animateChat() {
+      clearTimeout(chatTimer);
+      var body = document.querySelector('.chat-body');
+      if (!body) return;
+      body.innerHTML = '';
+      var d = 0;
+      chatMsgs.forEach(function(m) {
+        d += 900;
+        chatTimer = setTimeout(function() {
+          var el = document.createElement('div');
+          el.className = 'chat-msg ' + m.t;
+          el.innerHTML = m.h;
+          body.appendChild(el);
+          body.scrollTop = body.scrollHeight;
+        }, d);
+      });
+    }
+
+    // Crear dots
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.addEventListener('click', (function(idx) { return function() { goTo(idx); }; })(i));
+      dotsEl.appendChild(d);
+    }
+    var dots = dotsEl.querySelectorAll('button');
+
+    function goTo(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= total) idx = total - 1;
+      if (idx === current) return;
+      current = idx;
+      container.style.transform = 'translateY(-' + (current * slides[0].offsetHeight) + 'px)';
+      btnP.disabled = current === 0;
+      btnN.disabled = current === total - 1;
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+      // Animación
+      slides.forEach(function(s) { s.classList.remove('show'); });
+      slides[current].classList.add('show');
+      if (idx === 2) animateChat();
+    }
+
+    btnP.addEventListener('click', function() { goTo(current - 1); });
+    btnN.addEventListener('click', function() { goTo(current + 1); });
+
+    // Teclado
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+    });
+
+    // Iniciar
+    goTo(0);
+  </script>
+</body>
+</html>
