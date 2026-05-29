@@ -169,7 +169,6 @@ body {
       overflow-y:auto; scrollbar-width:none; justify-content:flex-end;
     }
     .chat-body::-webkit-scrollbar { display:none; }
-    }
     .chat-msg {
       max-width:80%; padding:7px 12px; border-radius:8px; font-size:0.6rem; line-height:1.4;
       animation: fadeUp 0.35s ease both;
@@ -566,12 +565,12 @@ body {
         <span>Fernando Moya</span>
         <span>Santiago Isbaner</span>
       </div>
-      <div style="position:absolute;bottom:20px;left:20px;display:flex;align-items:center;gap:10px;z-index:2;">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://32.192.124.14:3000/" alt="QR Demo" style="width:180px;height:180px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
-        <div style="font-size:0.55rem;color:var(--text2);line-height:1.4;">
-          <strong style="color:var(--blue-l);">Demo:</strong><br>
+      <div style="position:absolute;bottom:20px;left:20px;display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://32.192.124.14:3000/" alt="QR Demo" style="width:160px;height:160px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);">
+        <div style="text-align:center;font-size:0.6rem;color:var(--text2);line-height:1.5;">
+          <strong style="color:var(--blue-l);font-size:0.65rem;">Escaneá para probar</strong><br>
           umbrellaifts11@gmail.com<br>
-          <span style="font-family:'JetBrains Mono',monospace;">Infodets2024!</span>
+          <span style="font-family:'JetBrains Mono',monospace;color:#fff;">Infodets2024!</span>
         </div>
       </div>
     </section>
@@ -644,7 +643,7 @@ body {
       <div class="gbar"></div>
       <h2>🖥️ Arquitectura de Interfaz</h2>
       <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
-        Blueprint técnico del asistente — lenguaje natural, validación legal y autenticación segura
+        Blueprint técnico del asistente: Lenguaje natural, validación legal y autenticación segura
       </p>
       <div class="bp-grid">
         <div class="bp-side">
@@ -681,7 +680,7 @@ body {
       <div class="gbar"></div>
       <h2>🔒 Protocolo de Seguridad</h2>
       <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
-        Cascada de Degradación — la IA nunca adivina, siempre valida
+        Cascada de Degradación: La IA nunca adivina, siempre valida
       </p>
       <div class="staircase" style="flex:1;justify-content:center;align-self:center;">
         <div class="stair s0">
@@ -723,7 +722,7 @@ body {
       <div class="gbar"></div>
       <h2>📥 Gobernanza de Datos: Pipeline de Ingesta Controlada</h2>
       <p class="pic-sub" style="font-size:0.6rem;color:var(--text2);margin-bottom:0.4rem;">
-        Ingesta segura — del documento oficial al conocimiento de la IA en 60 segundos
+        Ingesta segura: Del documento oficial al conocimiento de la IA en 60 segundos
       </p>
       <div class="pic-container">
         <div class="pic-row">
@@ -821,7 +820,7 @@ body {
       <div class="gbar"></div>
       <h2>🛡️ Seguridad Zero Trust</h2>
       <p style="font-size:0.65rem;color:var(--text2);margin-bottom:0.6rem;">
-        Arquitectura de Confianza Cero — nadie entra sin autorización
+        Arquitectura de Confianza Cero: Nadie entra sin autorización
       </p>
       <div class="g2">
         <div class="card" style="border-left:3px solid var(--blue);text-align:center;">
@@ -1083,7 +1082,7 @@ body {
     <section class="slide">
       <div class="gbar"></div>
       <h2>💚 Signos Vitales del Proyecto</h2>
-      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.1rem;">El MVP ya late — desplegado y operativo en AWS</p>
+      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.1rem;">El MVP ya late: Desplegado y operativo en AWS</p>
       <svg class="vs-hb" viewBox="0 0 600 40" preserveAspectRatio="none">
         <line class="vs-hb-line" x1="0" y1="20" x2="600" y2="20"/>
         <path d="M0,20 Q40,20 50,20 L80,20 L85,8 L95,32 L105,12 L115,28 L125,16 L135,24 L145,18 L155,22 L165,20 L180,20 Q200,20 210,20 L240,20 L245,8 L255,32 L265,12 L275,28 L285,16 L295,24 L305,18 L315,22 L325,20 L340,20 Q360,20 370,20 L400,20 L405,8 L415,32 L425,12 L435,28 L445,16 L455,24 L465,18 L475,22 L485,20 L500,20 Q520,20 530,20 L560,20 L570,18 L580,22 L590,20 L600,20"/>
@@ -1182,7 +1181,7 @@ body {
     <section class="slide">
       <div class="gbar"></div>
       <h2 style="font-size:clamp(1rem,1.7vw,1.3rem);">🚀 Próximos Pasos</h2>
-      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.15rem;">El camino a producción — lo que falta y lo que viene</p>
+      <p style="font-size:0.6rem;color:var(--text2);margin-bottom:0.15rem;">El camino a producción: Lo que falta y lo que viene</p>
       <div class="g3" style="flex:1;grid-template-rows:1fr 1fr;gap:5px;">
         <div class="card" style="padding:6px 8px;display:flex;flex-direction:column;justify-content:center;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:1.4rem;">🔒</span><h4 style="font-size:0.75rem;margin:0;">Seguridad</h4></div>
@@ -1246,27 +1245,56 @@ body {
     </section>
 
     <!-- ════════════ 17: CIERRE ════════════ -->
-    <section class="slide portada">
+    <section class="slide" style="padding:40px 60px;">
       <div class="gbar"></div>
-      <h1>🙏 Gracias</h1>
-      <div class="gline"></div>
-      <p class="sub" style="font-size:0.8rem;">INFODETS — Sistema de Gestión de Conocimiento Dinámico</p>
-      <div style="margin-top:1.5rem;font-size:0.7rem; color:var(--text2);">
-        <strong style="color:var(--text);">Proyecto Integrador - PP1</strong><br>
-        <span>IFTS 11</span>
+      <!-- Título y subtítulo -->
+      <div style="text-align:center;margin-bottom:1.2rem;">
+        <h1 style="font-size:clamp(3rem,5.5vw,5rem);">Gracias</h1>
+        <p style="font-size:1rem;color:var(--text2);margin-top:0.5rem;">INFODETS — Sistema de Gestión de Conocimiento Dinámico</p>
+        <div style="width:80px;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-l),var(--red));border-radius:2px;margin:0.8rem auto;"></div>
+        <div style="font-size:0.85rem;color:var(--text2);">
+          <strong style="color:var(--text);">Proyecto Integrador - PP1</strong> · IFTS 11
+        </div>
+        <div style="margin-top:0.4rem;font-size:0.8rem;color:var(--text2);display:flex;gap:20px;justify-content:center;">
+          <span>Jorge Loyo</span>
+          <span>Fernando Moya</span>
+          <span>Santiago Isbaner</span>
+        </div>
       </div>
-      <div style="margin-top:0.6rem; font-size:0.65rem; color:var(--text2); display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-        <span>Jorge Loyo</span>
-        <span>Fernando Moya</span>
-        <span>Santiago Isbaner</span>
+      <!-- Links -->
+      <div style="display:flex;gap:14px;justify-content:center;font-size:0.8rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <a href="https://github.com/Jorge-Loyo/infodets" target="_blank" style="text-decoration:none;background:rgba(0,114,187,0.08);padding:8px 20px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);color:var(--text2);">
+          📂 <strong style="color:#fff;">GitHub:</strong> Repositorio
+        </a>
+        <a href="http://32.192.124.14:3000/" target="_blank" style="text-decoration:none;background:rgba(0,114,187,0.08);padding:8px 20px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);color:var(--text2);">
+          🌐 <strong style="color:#fff;">Demo:</strong> Aplicación
+        </a>
+        <a href="https://app.notion.com/p/Sistema-de-Gesti-n-de-Conocimiento-Din-mico-INFODETS-360f3c6f01508074b02de1acb7a4a1be?source=copy_link" target="_blank" style="text-decoration:none;background:rgba(0,114,187,0.08);padding:8px 20px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);color:var(--text2);">
+          📓 <strong style="color:#fff;">Notion:</strong> Documentación
+        </a>
       </div>
-      <div style="margin-top:0.6rem;display:flex;gap:12px;justify-content:center;font-size:0.65rem;flex-wrap:wrap;">
-        <span style="background:rgba(0,114,187,0.08);padding:5px 16px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);">
-          📂 <strong style="color:#fff;">GitHub:</strong> github.com/Jorge-Loyo/infodets
-        </span>
-        <span style="background:rgba(0,114,187,0.08);padding:5px 16px;border-radius:20px;border:1px solid rgba(0,114,187,0.12);">
-          🌐 <strong style="color:#fff;">Demo:</strong> 32.192.124.14:3000
-        </span>
+      <!-- Grid: Sugerencias + QR -->
+      <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;flex:1;">
+        <!-- Sugerencias -->
+        <div style="background:rgba(0,114,187,0.04);border:1px solid rgba(0,114,187,0.1);border-radius:10px;padding:14px 18px;">
+          <strong style="color:var(--blue-l);font-size:0.65rem;display:block;margin-bottom:8px;">🧪 Probá el sistema — Sugerencias de consulta:</strong>
+          <ul style="margin:0;padding:0 0 0 16px;font-size:0.58rem;color:var(--text2);line-height:1.8;list-style:disc;">
+            <li>"¿Qué dice la disposición del SIU?"</li>
+            <li>"¿Cuáles son las normas del reglamento escolar 2025 para educación superior?"</li>
+            <li>"¿Qué establece el estatuto docente de CABA?"</li>
+            <li>"¿Cuántos cargos por sección y alumnos por comisión establece el decreto 1990/97 del GCBA?"</li>
+            <li>"¿Cuál es el plan de estudios de la TS en Ciencia de Datos e IA?"</li>
+          </ul>
+        </div>
+        <!-- QR + Credenciales -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://32.192.124.14:3000/" alt="QR Demo" style="width:160px;height:160px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);">
+          <div style="text-align:center;font-size:0.6rem;color:var(--text2);line-height:1.5;">
+            <strong style="color:var(--blue-l);font-size:0.65rem;">Escaneá para probar</strong><br>
+            umbrellaifts11@gmail.com<br>
+            <span style="font-family:'JetBrains Mono',monospace;color:#fff;">Infodets2024!</span>
+          </div>
+        </div>
       </div>
     </section>
 
